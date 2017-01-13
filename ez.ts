@@ -145,7 +145,7 @@ class EzClient {
         console.log(e);
     }
     onMessage = (e) => {
-        console.log(e);
+        console.log("recv : " + e.data);
         
         var packet = JSON.parse(e.data);
         
@@ -177,7 +177,12 @@ class EzClient {
             this.onJoinPlayer(packet);
     }
     processLeavePlayer(packet: LeavePlayer) {
-        this.players.splice(this.players.indexOf(packet.Player), 1);
+        for (var i=0;i<this.players.length;i++) {
+            if (this.players[i].PlayerId == packet.Player.PlayerId) {
+                this.players.splice(i, 1);
+                break;
+            }
+        }
         
         if (this.onLeavePlayer != null)
             this.onLeavePlayer(packet);
@@ -190,6 +195,12 @@ class EzClient {
             this.onModifyWorldProperty(packet);
     }
     processModifyPlayerProperty(packet: ModifyPlayerProperty) {
+        if (packet.Player.PlayerId == this.player.PlayerId)
+        {
+            for (let key in packet.Property)
+                this.player.Property[key] = packet.Property[key];    
+        }
+        
         let player = this.players.filter(
             x => x.PlayerId == packet.Player.PlayerId)[0];
         
@@ -202,7 +213,7 @@ class EzClient {
     
     send(p: PacketBase) {
         let json = JSON.stringify(p);
-        console.log(json);
+        console.log("send : " + json);
         this.ws.send(json);
     }
     
