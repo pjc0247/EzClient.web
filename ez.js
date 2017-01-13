@@ -102,7 +102,7 @@ var EzClient = (function () {
             console.log(e);
         };
         this.onMessage = function (e) {
-            console.log(e);
+            console.log("recv : " + e.data);
             var packet = JSON.parse(e.data);
             if (packet.__type == WorldInfo.__type__)
                 _this.processWorldInfo(packet);
@@ -159,7 +159,12 @@ var EzClient = (function () {
             this.onJoinPlayer(packet);
     };
     EzClient.prototype.processLeavePlayer = function (packet) {
-        this.players.splice(this.players.indexOf(packet.Player), 1);
+        for (var i = 0; i < this.players.length; i++) {
+            if (this.players[i].PlayerId == packet.Player.PlayerId) {
+                this.players.splice(i, 1);
+                break;
+            }
+        }
         if (this.onLeavePlayer != null)
             this.onLeavePlayer(packet);
     };
@@ -170,6 +175,10 @@ var EzClient = (function () {
             this.onModifyWorldProperty(packet);
     };
     EzClient.prototype.processModifyPlayerProperty = function (packet) {
+        if (packet.Player.PlayerId == this.player.PlayerId) {
+            for (var key in packet.Property)
+                this.player.Property[key] = packet.Property[key];
+        }
         var player = this.players.filter(function (x) { return x.PlayerId == packet.Player.PlayerId; })[0];
         for (var key in packet.Property)
             player.Property[key] = packet.Property[key];
@@ -178,7 +187,7 @@ var EzClient = (function () {
     };
     EzClient.prototype.send = function (p) {
         var json = JSON.stringify(p);
-        console.log(json);
+        console.log("send : " + json);
         this.ws.send(json);
     };
     /* PUBLIC API */
