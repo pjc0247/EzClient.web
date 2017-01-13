@@ -206,14 +206,3 @@ var EzClient = (function () {
     };
     return EzClient;
 }());
-var ez = EzClient.connect("ws://localhost:9916/", "asdf", {});
-ez.onWorldInfo = function (packet) {
-    console.log(packet);
-    ez.setWorldProperty({ a: 1 });
-};
-ez.onJoinPlayer = function (packet) {
-    console.log("OnJoin : " + ez.players.length);
-};
-ez.onLeavePlayer = function (packet) {
-    console.log("OnLeave : " + ez.players.length);
-};
