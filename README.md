@@ -1,6 +1,7 @@
 EzClient.web
 ====
 
+__GSF.Ez__ implementation for `Typescript` & `JavaScript`.
 
 ```typescript
 let playerId = "pjc0247";
